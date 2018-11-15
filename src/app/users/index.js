@@ -5,9 +5,7 @@ var router = express.Router();
 var usersController = require('./usersController');
 
 //Ruta para registrar usuario
-router.get('/:id', usersController.register);
-router.post('/', function(req, res) {
-  console.log('Crear un usuario');
-});
+router.get('/', usersController.register);
+router.post('/', usersController.register);
 
 module.exports = router;
