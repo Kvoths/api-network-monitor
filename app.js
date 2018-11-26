@@ -25,4 +25,12 @@ if (config.env === 'development') {
 app.use('/users', usersApp);
 app.get('/', (req, res) => res.send('Hello World!'))
 
-app.listen(config.env.port, () => console.log(`Example app liscochog on port ${config.env.port}!`))
+app.use(function(err, req, res, next) {
+  res.status(500);
+  res.send({
+      mensaje: err.message,
+      error: err
+  });
+});
+
+app.listen(config.env.port, () => console.log('Example app listenning on port ${config.env.port}!'))

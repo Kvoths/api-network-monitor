@@ -45,5 +45,24 @@ userSchema.methods.setPassword = function (password) {
     this.password = crypto.scryptSync(password, this.salt, 256).toString('hex');
 };
 
+//Comprueba la pass
+userSchema.methods.checkPassword = function (password) {
+    var hash = crypto.scryptSync(password, this.salt, 256).toString('hex');
+    return (hash === this.password);
+};
+
+//Generamos el token JWT
+userSchema.methods.generateToken = function (password) {
+    var expiry = new Date();
+    expiry.setDate(expiry.getDate() + 7);
+  
+    return jwt.sign({
+      _id: this._id,
+      mail: this.email,
+      name: this.name,
+      exp: parseInt(expiry.getTime() / 1000),
+    }, 'MY_SECRET');
+};
+
 //Creamos el modelo
 mongoose.model('User', userSchema);

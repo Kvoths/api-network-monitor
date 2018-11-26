@@ -5,7 +5,22 @@ var router = express.Router();
 var usersController = require('./usersController');
 
 //Ruta para registrar usuario
-router.get('/', usersController.register);
-router.post('/', usersController.register);
+router.post('/register', usersController.register);
+//Ruta para loguar usuarios
+router.post('/login', usersController.login);
+
+//Manejadores de errores
+router.use(function(err, req, res, next) {
+    if (err.name == 'ValidationError')
+    {
+        res.status(400);
+        res.send({
+            mensaje: err.message,
+            error: err
+        });
+    }
+    else
+        next(err);
+});
 
 module.exports = router;
