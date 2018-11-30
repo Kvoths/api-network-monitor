@@ -5,9 +5,7 @@ var router = express.Router();
 var commandsController = require('./commandsController');
 
 //Ruta para registrar usuario
-router.post('/register', commandsController.register);
-//Ruta para loguar usuarios
-router.post('/login', commandsController.login);
+router.post('/', commandsController.save);
 
 //Manejadores de errores
 router.use(function(err, req, res, next) {

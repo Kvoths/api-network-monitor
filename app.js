@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const app = express()
 //Modules
 var usersApp = require('./src/app/users/');
+var commandsApp = require('./src/app/commands/');
 
 app.use(bodyParser.json());
 
@@ -23,6 +24,7 @@ if (config.env === 'development') {
 
 //Routes
 app.use('/users', usersApp);
+app.use('/commands', commandsApp);
 app.get('/', (req, res) => res.send('Hello World!'))
 
 app.use(function(err, req, res, next) {
