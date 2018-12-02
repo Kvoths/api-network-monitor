@@ -4,8 +4,8 @@ const config = require( './config').config;
 const bodyParser = require('body-parser');
 const app = express()
 //Modules
-var usersApp = require('./src/app/users/');
-var commandsApp = require('./src/app/commands/');
+const usersApp = require('./src/app/users/');
+const commandsApp = require('./src/app/commands/');
 
 app.use(bodyParser.json());
 
@@ -35,4 +35,4 @@ app.use(function(err, req, res, next) {
   });
 });
 
-app.listen(config.env.port, () => console.log('Example app listenning on port ${config.env.port}!'))
+app.listen(config.env.port, () => console.log(`Example app listenning on port ${config.env.port}!`));

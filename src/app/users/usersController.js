@@ -1,6 +1,6 @@
-var mongoose = require('mongoose');
+const mongoose = require('mongoose');
 require('./user');
-var User = mongoose.model('User');
+const User = mongoose.model('User');
 //var exports = module.exports;
 exports.register = function (req, res, next) {
     var user = new User();

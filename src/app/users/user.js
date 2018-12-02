@@ -1,10 +1,10 @@
 //Importamos la librería de mongoose y la de crypto
-var mongoose = require('mongoose');
-var jwt = require('jsonwebtoken');
-var crypto = require('crypto');
+const mongoose = require('mongoose');
+const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 
 //Se define un esquema para la base de datos
-var Schema = mongoose.Schema;
+const Schema = mongoose.Schema;
 
 var userSchema = new Schema({
     name: {

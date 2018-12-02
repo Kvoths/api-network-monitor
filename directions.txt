@@ -1,0 +1,9 @@
+Para conseguir ejecutar tcpdump sin ser root (con estos comandos todos los usuarios del grupo pcap podrán capturar paquetes)
+    Add a capture group and add yourself to it:
+        sudo groupadd pcap
+        sudo usermod -a -G pcap $USER
+    Next, change the group of tcpdump and set permissions:
+        sudo chgrp pcap /usr/sbin/tcpdump
+        sudo chmod 750 /usr/sbin/tcpdump
+    Finally, use setcap to give tcpdump the necessary permissions:
+        sudo setcap cap_net_raw,cap_net_admin=eip /usr/sbin/tcpdump

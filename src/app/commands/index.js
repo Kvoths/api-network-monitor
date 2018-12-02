@@ -1,11 +1,12 @@
 //Este módulo es el encargado de gestionar usuarios
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 //Importamos el controlador de Usuario
-var commandsController = require('./commandsController');
+const commandsController = require('./commandsController');
 
 //Ruta para registrar usuario
 router.post('/', commandsController.save);
+router.post('/execution', commandsController.exec);
 
 //Manejadores de errores
 router.use(function(err, req, res, next) {

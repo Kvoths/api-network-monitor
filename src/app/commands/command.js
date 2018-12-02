@@ -1,8 +1,7 @@
 //Importamos la librería de mongoose y la de crypto
-var mongoose = require('mongoose');
-
+const mongoose = require('mongoose');
 //Se define un esquema para la base de datos
-var Schema = mongoose.Schema;
+const Schema = mongoose.Schema;
 
 var parameterSchema = new Schema({
     name: {
@@ -32,8 +31,8 @@ var commandSchema = new Schema({
 });
 
 //Métodos
-commandSchema.methods.copyFromJSON = function (json) {
-    var command = JSON.parse(json);
+commandSchema.methods.execCommand = function () {
+    var commandString = this.name;
 
     this.name = command.name;
     for (let parameter in command.parameters)
@@ -42,7 +41,6 @@ commandSchema.methods.copyFromJSON = function (json) {
     }
     
 
-    return (hash === this.password);
 };
 //Creamos el modelo
 mongoose.model('Command', commandSchema);
