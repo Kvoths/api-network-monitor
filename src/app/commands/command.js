@@ -3,6 +3,29 @@ const mongoose = require('mongoose');
 //Se define un esquema para la base de datos
 const Schema = mongoose.Schema;
 
+var cronTimeSchema = new Schema({
+    minute: {
+        type: Number,
+        default: '*'
+    },
+    hour: {
+        type: Number,
+        default: '*'
+    },
+    dayMonth: {
+        type: Number,
+        default: '*'
+    },
+    month: {
+        type: Number,
+        default: '*'
+    },
+    dayWeek: {
+        type: Number,
+        default: '*'
+    }
+});
+
 var parameterSchema = new Schema({
     name: {
         type: String,
@@ -12,7 +35,6 @@ var parameterSchema = new Schema({
         type: String,
     }
 });
-
 
 var commandSchema = new Schema({
     name: {
@@ -28,6 +50,14 @@ var commandSchema = new Schema({
             msg: 'You must insert at least one parameter'
         }
     },
+    time: {   
+        type: cronTimeSchema,
+        required: "The time when the command will be executed is required",
+    },
+    duration: {
+        type: Number,
+        required: "The duration of the command is required"
+    }
 });
 
 //Métodos

@@ -9,6 +9,8 @@ exports.save = function (req, res, next) {
     
     command.name = req.body.name;
     command.parameters = req.body.parameters
+    command.time = req.body.time
+    command.duration = req.body.duration
     command.save( function(err) {
         if (err)
             next(err);
@@ -45,7 +47,7 @@ exports.exec = function (req, res, next) {
       
     spawn(commandString, spawnOptions).on('exit', function (code) {
         console.log('child process exited with code ' + code.toString());
-    }); 
+    });
     /*command.name = req.body.name;
     command.parameters = req.body.parameters
     command.save( function(err) {
