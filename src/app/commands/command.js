@@ -5,23 +5,23 @@ const Schema = mongoose.Schema;
 
 var cronTimeSchema = new Schema({
     minute: {
-        type: Number,
+        type: String,
         default: '*'
     },
     hour: {
-        type: Number,
+        type: String,
         default: '*'
     },
     dayMonth: {
-        type: Number,
+        type: String,
         default: '*'
     },
     month: {
-        type: Number,
+        type: String,
         default: '*'
     },
     dayWeek: {
-        type: Number,
+        type: String,
         default: '*'
     }
 });
