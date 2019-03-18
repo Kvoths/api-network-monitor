@@ -13,7 +13,7 @@ exports.save = function (req, res, next) {
     command.duration = req.body.duration
     command.save( function(err) {
         if (err)
-            next(err);
+            return next(err);
         
         res.status(204);
         res.json({
@@ -22,40 +22,60 @@ exports.save = function (req, res, next) {
 }
 
 exports.exec = function (req, res, next) {
-    var command = req.body;
-    var commandString = command.name;
-    for (let index in command.parameters)
-    {
-        var parameter = command.parameters[index];
+    var command_id = req.params.id;
+    
+    if (command_id.match(/^[0-9a-fA-F]{24}$/)) {
+        Command.findById (command_id, function (err, command) {
+            if ( err )
+                return next(err);
+            if ( command === null )
+                return next("The command id doesn't exist on the database");
+            
+            var commandParams = [];
 
-        if (parameter['value'] === undefined || parameter['value'] === null)
-            parameter['value'] = '';
-        commandString += ` ${parameter['name']} ${parameter['value']}`;
-    }
+            for (var i = 0; i < command.parameters.length; i++)
+            {
+                var parameter = command.parameters[i];
+                commandParams.push(parameter['name']);
 
-    const spawnOptions = {
-        shell: true
-    }
+                if (parameter['value'] !== undefined && parameter['value'] !== null)
+                    commandParams.push(parameter['value']);
+            }
+            
+            /*const spawnOptions = {
+                shell: true,
+                timeout: command.duration * 1000
+            }*/
+            
+            commandSpawn = spawn(command.name, commandParams);
+            
+            setTimeout( function () { 
+                //process.kill(-commandSpawn.pid);
+                console.log('Timeout, the process will be killed');
+                commandSpawn.kill('SIGINT');
+                kill(commandSpawn.pid);
+                process.kill(commandSpawn.pid, 'SIGINT');
+            }, command.duration * 1000);
+            
+            commandSpawn.stdout.on('data', function (data) {
+                if (data != null)
+                    console.log('stdout: ' + data.toString());
 
-    spawn(commandString, spawnOptions).stdout.on('data', function (data) {
-        console.log('stdout: ' + data.toString());
-      });
-      
-    spawn(commandString, spawnOptions).stderr.on('data', function (data) {
-        console.log('stderr: ' + data.toString());
-    });
-      
-    spawn(commandString, spawnOptions).on('exit', function (code) {
-        console.log('child process exited with code ' + code.toString());
-    });
-    /*command.name = req.body.name;
-    command.parameters = req.body.parameters
-    command.save( function(err) {
-        if (err)
-            next(err);
-        
-        res.status(204);
-        res.json({
+            });
+                
+            commandSpawn.stderr.on('data', function (data) {
+                if (data != null)
+                    console.log('stderr: ' + data.toString());
+            });
+                
+            commandSpawn.on('exit', function (code) {
+                if (code != null)
+                    console.log('child process exited with code ' + code.toString());
+            });
+
+
         });
-    });*/
+    } else {
+        next('Invalid id');
+    }
 }

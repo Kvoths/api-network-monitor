@@ -61,16 +61,6 @@ var commandSchema = new Schema({
 });
 
 //Métodos
-commandSchema.methods.execCommand = function () {
-    var commandString = this.name;
 
-    this.name = command.name;
-    for (let parameter in command.parameters)
-    {
-
-    }
-    
-
-};
 //Creamos el modelo
 mongoose.model('Command', commandSchema);
