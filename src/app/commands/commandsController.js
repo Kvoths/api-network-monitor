@@ -42,40 +42,49 @@ exports.exec = function (req, res, next) {
                     commandParams.push(parameter['value']);
             }
             
-            /*const spawnOptions = {
-                shell: true,
-                timeout: command.duration * 1000
-            }*/
-            
             commandSpawn = spawn(command.name, commandParams);
-            
-            setTimeout( function () { 
-                //process.kill(-commandSpawn.pid);
-                console.log('Timeout, the process will be killed');
-                commandSpawn.kill('SIGINT');
-                kill(commandSpawn.pid);
-                process.kill(commandSpawn.pid, 'SIGINT');
-            }, command.duration * 1000);
-            
-            commandSpawn.stdout.on('data', function (data) {
-                if (data != null)
-                    console.log('stdout: ' + data.toString());
-
-            });
-                
-            commandSpawn.stderr.on('data', function (data) {
-                if (data != null)
-                    console.log('stderr: ' + data.toString());
-            });
-                
-            commandSpawn.on('exit', function (code) {
-                if (code != null)
-                    console.log('child process exited with code ' + code.toString());
-            });
-
-
+            var algo = this.getCommandOutput(commandSpawn, command.duration).then( output => saveCommandOutput (command.name, output));
         });
     } else {
         next('Invalid id');
     }
 }
+
+getCommandOutput = function (commandSpawn, duration) {
+    return new Promise( function(resolve, reject) {
+        var output = '';
+        
+        setTimeout( function () { 
+            console.log('Timeout, the process will be killed');
+            commandSpawn.kill('SIGINT');
+        }, duration * 1000);
+        
+        commandSpawn.stdout.on('data', function (data) {
+            if (data != null)
+                output += data.toString();
+        });
+            
+        commandSpawn.stderr.on('data', function (data) {
+            if (data != null)
+                console.log('stderr: ' + data.toString());
+        });
+            
+        commandSpawn.on('exit', function (code) {
+            if (code != null) {
+                console.log('child process exited with code ' + code.toString());
+                resolve(output);
+            }
+        });
+    });
+}
+
+saveCommandOutput = function (commandName, output) {
+    switch (commandName) {
+        case 'ping':
+            
+            break;
+        default:
+            console.log(`The command ${commandName} is not yet implemented.`);
+    }
+}
+
