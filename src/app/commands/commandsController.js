@@ -1,8 +1,10 @@
 const mongoose = require('mongoose');
 const { spawn } = require('child_process');
 require('./command');
+require('./result');
 // var Parameter = mongoose.model('Command');
 var Command = mongoose.model('Command');
+var Result = mongoose.model('Result');
 //var exports = module.exports;
 exports.save = function (req, res, next) {
     var command = new Command();
@@ -81,10 +83,33 @@ getCommandOutput = function (commandSpawn, duration) {
 saveCommandOutput = function (commandName, output) {
     switch (commandName) {
         case 'ping':
-            
+            //Si la última línea del ping es rtt significa que ha tenido éxito el ping
+            var expr = 'rtt min/avg/max/mdev = ';
+            var dividedString = output.split(expr);
+            if (typeof dividedString[1] !== 'undefined') {
+                var values = dividedString[1].replace(' ms\n', '');
+                values = values.split('/');
+                values = {
+                    "min": values[0],
+                    "avg": values[1],
+                    "max": values[2],
+                    "mdev": values[3],
+                };
+                this.saveResult('ping', values);
+            }
             break;
         default:
             console.log(`The command ${commandName} is not yet implemented.`);
     }
 }
 
+saveResult = function (type, values) {
+    var result = new Result();
+    result.type = type;
+    result.results = values;
+    result.save( function(err) {
+        if (err)
+            return next(err);
+        return true;    
+    });
+}
