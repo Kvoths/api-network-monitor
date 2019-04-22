@@ -6,6 +6,7 @@ const app = express()
 //Modules
 const usersApp = require('./src/app/users/');
 const commandsApp = require('./src/app/commands/');
+const probesApp = require('./src/app/probes/');
 
 app.use(bodyParser.json());
 
@@ -25,6 +26,7 @@ if (config.env === 'development') {
 //Routes
 app.use('/users', usersApp);
 app.use('/commands', commandsApp);
+app.use('/probes', probesApp);
 app.get('/', (req, res) => res.send('Hello World!'))
 
 app.use(function(err, req, res, next) {
