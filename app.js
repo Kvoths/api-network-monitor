@@ -2,11 +2,17 @@ const express = require('express');
 const mongoose = require('mongoose');
 const config = require( './config').config;
 const bodyParser = require('body-parser');
-const app = express()
+const https = require('https');
+const app = express();
+const fs = require('fs');
 //Modules
 const usersApp = require('./src/app/users/');
 const commandsApp = require('./src/app/commands/');
 const probesApp = require('./src/app/probes/');
+//Certificados
+const privateKey  = fs.readFileSync('sslcert/key.pem', 'utf8');
+const certificate = fs.readFileSync('sslcert/certificate.pem', 'utf8');
+const credentials = {key: privateKey, cert: certificate};
 
 app.use(bodyParser.json());
 
@@ -37,4 +43,5 @@ app.use(function(err, req, res, next) {
   });
 });
 
-app.listen(config.env.port, () => console.log(`Example app listenning on port ${config.env.port}!`));
+var httpsServer = https.createServer(credentials, app);
+httpsServer.listen(config.env.port, () => console.log(`Example app listenning on port ${config.env.port}!`));
