@@ -6,7 +6,9 @@ const probesController = require('./probesController');
 
 //Ruta para registrar usuario
 router.get('/', probesController.list);
-router.post('/new', probesController.save);
+router.get('/find/:id', probesController.getById);
+router.post('/:id', probesController.save);
+router.put('/:id', probesController.update);
 
 //Manejadores de errores
 router.use(function(err, req, res, next) {

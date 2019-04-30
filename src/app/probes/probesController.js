@@ -8,24 +8,62 @@ exports.save = function (req, res, next) {
     var probe = new Probe();
     
     probe.name = req.body.name;
-    probe.ip = req.body.ip
-    probe.port = req.body.port
-    probe.active = req.body.active
+    probe.ip = req.body.ip;
+    probe.port = req.body.port;
+    probe.active = req.body.active;
     probe.save( function(err) {
-        if (err)
+        if (err) {
             return next(err);
+        }
         
         res.status(204);
         res.json({});
     });
 }
 
+exports.update = function (req, res, next) {
+    let id = req.params.id;
+
+    Probe.findById(id,  function(err, probe) {
+        if (err) {
+            return next(err);
+        }
+
+        probe.name = req.body.name;
+        probe.ip = req.body.ip;
+        probe.port = req.body.port;
+        probe.active = req.body.active;
+        probe.save( function(err) {
+            if (err) {
+                return next(err);
+            }
+            
+            res.status(204);
+            res.json({});
+        });
+    });
+}
+
 exports.list = function (req, res, next) {
     Probe.find( function(err, probes) {
-        if (err)
+        if (err) {
             return next(err);
-        var algo = JSON.stringify(probes); 
+        }
+
         res.status(200);
         res.json(probes);
     });
 }
+
+exports.getById = function (req, res, next) {
+    let id = req.params.id;
+
+    Probe.findById(id,  function(err, probe) {
+        if (err) {
+            return next(err);
+        }
+
+        res.status(200);
+        res.json(probe);
+    });
+};

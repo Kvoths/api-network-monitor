@@ -8,7 +8,6 @@ var resultSchema = new Schema({
     type: String,
     date: Date,
     results: {}
-
 });
 
 //Métodos
