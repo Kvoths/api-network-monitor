@@ -55,7 +55,20 @@ exports.exec = function (req, res, next) {
 }
 
 exports.list = function (req, res, next) {
+
     Command.find( function(err, commands) {
+        if (err) {
+            return next(err);
+        }
+
+        res.status(200);
+        res.json(commands);
+    });
+}
+
+exports.listByProbe = function (req, res, next) {
+    let probe_id = req.query.probe_id;
+    Command.find( { 'probe': probe_id}, function(err, commands) {
         if (err) {
             return next(err);
         }

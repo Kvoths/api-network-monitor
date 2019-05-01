@@ -6,6 +6,7 @@ const commandsController = require('./commandsController');
 
 //Ruta para registrar usuario
 router.get('/', commandsController.list);
+router.get('/byProbe', commandsController.listByProbe);
 router.post('/', commandsController.save);
 router.post('/execution/:id', commandsController.exec);
 
