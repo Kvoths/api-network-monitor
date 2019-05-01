@@ -52,6 +52,17 @@ exports.exec = function (req, res, next) {
     }
 }
 
+exports.list = function (req, res, next) {
+    Command.find( function(err, commands) {
+        if (err) {
+            return next(err);
+        }
+
+        res.status(200);
+        res.json(commands);
+    });
+}
+
 getCommandOutput = function (commandSpawn, duration) {
     return new Promise( function(resolve, reject) {
         var output = '';
