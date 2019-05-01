@@ -2,11 +2,22 @@
 const mongoose = require('mongoose');
 //Se define un esquema para la base de datos
 const Schema = mongoose.Schema;
+const ObjectId = mongoose.Schema.Types.ObjectId;
 
 var resultSchema = new Schema({
-    //id_command: { type: Schema.Types.ObjectId, ref: 'Command' },
-    type: String,
-    date: Date,
+    type: {
+        type: String,
+        required: "The result's type is required"
+    },
+    date: {
+        type: Date,
+        default: Date.now,
+    },
+    command: { 
+        type: ObjectId,
+        ref: 'Command',
+        required: 'The command that outputs the result is required'
+    },
     results: {}
 });
 

@@ -10,9 +10,10 @@ exports.save = function (req, res, next) {
     var command = new Command();
     
     command.name = req.body.name;
-    command.parameters = req.body.parameters
-    command.time = req.body.time
-    command.duration = req.body.duration
+    command.parameters = req.body.parameters;
+    command.time = req.body.time;
+    command.duration = req.body.duration;
+    command.probe = req.body.probe;
     command.save( function(err) {
         if (err)
             return next(err);
@@ -45,7 +46,8 @@ exports.exec = function (req, res, next) {
             }
             
             commandSpawn = spawn(command.name, commandParams);
-            var algo = this.getCommandOutput(commandSpawn, command.duration).then( output => saveCommandOutput (command.name, output));
+            this.getCommandOutput(commandSpawn, command.duration).then( output => saveCommandOutput (command._id, command.name, output, command.duration));
+            
         });
     } else {
         next('Invalid id');
@@ -73,13 +75,16 @@ getCommandOutput = function (commandSpawn, duration) {
         }, duration * 1000);
         
         commandSpawn.stdout.on('data', function (data) {
-            if (data != null)
+            if (data != null) {
                 output += data.toString();
+            }
         });
             
         commandSpawn.stderr.on('data', function (data) {
-            if (data != null)
+            if (data != null) {
                 console.log('stderr: ' + data.toString());
+                output += data.toString();
+            }
         });
             
         commandSpawn.on('exit', function (code) {
@@ -91,31 +96,51 @@ getCommandOutput = function (commandSpawn, duration) {
     });
 }
 
-saveCommandOutput = function (commandName, output) {
-    switch (commandName) {
+saveCommandOutput = function (command_id, command_name, output, duration) {
+    let expr, dividedString, values;
+    switch (command_name) {
         case 'ping':
             //Si la última línea del ping es rtt significa que ha tenido éxito el ping
-            var expr = 'rtt min/avg/max/mdev = ';
-            var dividedString = output.split(expr);
+            expr = 'rtt min/avg/max/mdev = ';
+            dividedString = output.split(expr);
             if (typeof dividedString[1] !== 'undefined') {
-                var values = dividedString[1].replace(' ms\n', '');
+                values = dividedString[1].replace(' ms\n', '');
                 values = values.split('/');
                 values = {
                     "min": values[0],
                     "avg": values[1],
                     "max": values[2],
                     "mdev": values[3],
+                    "duration": duration
                 };
-                this.saveResult('ping', values);
+                this.saveResult(command_id, 'ping', values);
             }
             break;
+        case 'tcpdump':
+            expr = ' packets captured';
+            dividedString = output.split(expr);
+            expr = '\n';
+            dividedString = dividedString[0].split(expr);
+            let num_packets = dividedString[dividedString.length - 1];
+            
+            if (!isNaN(num_packets)) {
+                values = {
+                    "num_packets": num_packets,
+                    "duration": duration,
+                    "num_packets_per_secon": (num_packets / duration)
+                };
+                this.saveResult(command_id, 'tcpdump', values);
+            }
+
+            break;
         default:
-            console.log(`The command ${commandName} is not yet implemented.`);
+            console.log(`The command ${command_name} is not yet implemented.`);
     }
 }
 
-saveResult = function (type, values) {
+saveResult = function (command_id, type, values) {
     var result = new Result();
+    result.command = command_id;
     result.type = type;
     result.results = values;
     result.save( function(err) {

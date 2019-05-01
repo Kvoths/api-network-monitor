@@ -2,6 +2,7 @@
 const mongoose = require('mongoose');
 //Se define un esquema para la base de datos
 const Schema = mongoose.Schema;
+const ObjectId = mongoose.Schema.Types.ObjectId;
 
 var cronTimeSchema = new Schema({
     minute: {
@@ -57,6 +58,11 @@ var commandSchema = new Schema({
     duration: {
         type: Number,
         required: "The duration of the command is required"
+    },
+    probe: { 
+        type: ObjectId,
+        ref: 'Probe',
+        required: 'The probe where the command will be executed is required'
     }
 });
 
