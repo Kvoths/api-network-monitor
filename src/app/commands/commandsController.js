@@ -41,7 +41,7 @@ exports.exec = function (req, res, next) {
                 var parameter = command.parameters[i];
                 commandParams.push(parameter['name']);
 
-                if (parameter['value'] !== undefined && parameter['value'] !== null)
+                if (parameter['value'] !== undefined && parameter['value'] !== null && parameter['value'] !== "")
                     commandParams.push(parameter['value']);
             }
             
@@ -68,6 +68,7 @@ exports.list = function (req, res, next) {
 
 exports.listByProbe = function (req, res, next) {
     let probe_id = req.query.probe_id;
+
     Command.find( { 'probe': probe_id}, function(err, commands) {
         if (err) {
             return next(err);
@@ -76,6 +77,40 @@ exports.listByProbe = function (req, res, next) {
         res.status(200);
         res.json(commands);
     });
+}
+
+exports.getResults = function (req, res, next) {
+    Result.find( function ( err, results ) {
+        res.status(200);
+        res.json(results);
+    });
+}
+
+exports.getResultsByCommand = function (req, res, next) {
+    let command_id = req.params.id;
+
+    Result.find( {'command': command_id}, function ( err, results ) {
+        res.status(200);
+        res.json(results);
+    });
+}
+
+exports.getResultsByCommandBetweenDates = function (req, res, next) {
+   let command_id = req.params.id;
+   let start_date = req.query.start_date;
+   let end_date = req.query.end_date;
+   console.log(start_date);
+   console.log(end_date);
+   Result.find({
+       'command': command_id,
+       'date': {
+           $gte: new Date(start_date),
+           $lte: new Date(end_date)
+        }
+    }, function ( err, results ) {
+       res.status(200);
+       res.json(results);
+   });
 }
 
 getCommandOutput = function (commandSpawn, duration) {
@@ -159,6 +194,6 @@ saveResult = function (command_id, type, values) {
     result.save( function(err) {
         if (err)
             return next(err);
-        return true;    
+        return true;
     });
 }
