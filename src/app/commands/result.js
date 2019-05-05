@@ -18,7 +18,11 @@ var resultSchema = new Schema({
         ref: 'Command',
         required: 'The command that outputs the result is required'
     },
-    results: {}
+    results: {},
+    sent: {
+        type: Boolean,
+        default: false
+    }
 });
 
 //Métodos
