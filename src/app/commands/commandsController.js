@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const cron = require('node-cron');
 const { spawn } = require('child_process');
 require('./command');
 require('./result');
@@ -14,14 +15,39 @@ exports.save = function (req, res, next) {
     command.time = req.body.time;
     command.duration = req.body.duration;
     command.probe = req.body.probe;
-    command.save( function(err) {
+    command.save( function(err, command) {
         if (err)
             return next(err);
-        
+        this.createCron(command);
         res.status(204);
         res.json({
         });
     });
+}
+
+createCron = function (command) {
+    let time = command.time;
+    let cronString = time.minute + ' ' + time.hour + ' ' + time.dayMonth + ' ' + time.month + ' ' + time.dayWeek;  
+
+    cron.schedule(cronString, () => {
+        this.execAuto(command);
+    });
+}
+
+execAuto = function (command) {
+    var commandParams = [];
+
+    for (var i = 0; i < command.parameters.length; i++)
+    {
+        var parameter = command.parameters[i];
+        commandParams.push(parameter['name']);
+
+        if (parameter['value'] !== undefined && parameter['value'] !== null && parameter['value'] !== "")
+            commandParams.push(parameter['value']);
+    }
+    
+    commandSpawn = spawn(command.name, commandParams);
+    this.getCommandOutput(commandSpawn, command.duration).then( output => saveCommandOutput (command._id, command.name, output, command.duration));
 }
 
 exports.exec = function (req, res, next) {
