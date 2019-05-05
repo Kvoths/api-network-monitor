@@ -10,6 +10,7 @@ router.get('/byProbe', commandsController.listByProbe);
 router.get('/results', commandsController.getResults);
 router.get('/:id/results', commandsController.getResultsByCommand);
 router.get('/:id/results/byDate', commandsController.getResultsByCommandBetweenDates);
+router.get('/availableTypes', commandsController.getCommandsAvailableTypes);
 router.post('/', commandsController.save);
 router.post('/execution/:id', commandsController.exec);
 

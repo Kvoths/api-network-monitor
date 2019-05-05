@@ -113,6 +113,22 @@ exports.getResultsByCommandBetweenDates = function (req, res, next) {
    });
 }
 
+exports.getCommandsAvailableTypes = function (req, res, next) {
+    let results = [
+        {
+            'name': 'Medir latencia y congestión',
+            'value': 'ping'
+        },
+        {
+            'name': 'Medir tasa de paquetes por segundo',
+            'value': 'tcpdump'
+        }
+    ];
+
+    res.status(200);
+    res.json(results);
+}
+
 getCommandOutput = function (commandSpawn, duration) {
     return new Promise( function(resolve, reject) {
         var output = '';
