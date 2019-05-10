@@ -2,12 +2,23 @@ const express = require('express');
 const mongoose = require('mongoose');
 const config = require( './config').config;
 const bodyParser = require('body-parser');
-const http = require('http');
 const https = require('https');
 const app = express();
 const fs = require('fs');
+
+//Securizar rutas
+const passport = require('passport');
+const jwt = require('express-jwt');
+
+process.env.jwt_secret = config.env.jwt_secret;
+const auth = jwt({
+  secret: process.env.jwt_secret,
+  userProperty: 'payload'
+});
+
 //Modules
 const usersApp = require('./src/app/users/');
+require('./config/passport');
 const commandsApp = require('./src/app/commands/');
 const probesApp = require('./src/app/probes/');
 //Certificados
@@ -31,18 +42,25 @@ if (config.env === 'development') {
 }
 
 //Hack para habilitar cross origin
+app.use(passport.initialize());
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header('Access-Control-Allow-Methods', 'PUT, POST, GET, DELETE, OPTIONS');
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  res.header("Access-Control-Allow-Headers", "*");
   next();
 });
 
 //Routes
-app.use('/users', usersApp);
-app.use('/commands', commandsApp);
-app.use('/probes', probesApp);
-app.get('/', (req, res) => res.send('Hello World!'))
+app.use('/', usersApp);
+app.use('/', auth, commandsApp);
+app.use('/probes', auth, probesApp);
+
+app.use(function (err, req, res, next) {
+  if (err.name === 'UnauthorizedError') {
+    res.status(401);
+    res.json({"message" : err.name + ": " + err.message});
+  }
+});
 
 app.use(function(err, req, res, next) {
   res.status(500);
@@ -51,8 +69,5 @@ app.use(function(err, req, res, next) {
       error: err
   });
 });
-
-var httpServer = http.createServer(app);
 var httpsServer = https.createServer(credentials, app);
-//httpsServer.listen(config.env.port, () => console.log(`Example app listenning on port ${config.env.port}!`));
-httpServer.listen(config.env.port, () => console.log(`Example app listenning on port ${config.env.port}!`));
+httpsServer.listen(config.env.port, () => console.log(`Example app listenning on port ${config.env.port}!`));

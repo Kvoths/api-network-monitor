@@ -55,6 +55,19 @@ exports.list = function (req, res, next) {
     });
 }
 
+exports.delete = function (req, res, next) {
+    let id = req.params.id;
+    
+    Probe.deleteOne( {'_id': id}, function(err, probes) {
+        if (err) {
+            return next(err);
+        }
+
+        res.status(204);
+        res.json({});
+    });
+}
+
 exports.getById = function (req, res, next) {
     let id = req.params.id;
 

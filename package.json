@@ -10,10 +10,14 @@
   "author": "Carlos López Sanchís",
   "license": "ISC",
   "dependencies": {
+    "axios": "^0.18.0",
     "body-parser": "^1.18.3",
     "express": "^4.16.4",
+    "express-jwt": "^5.3.1",
     "jsonwebtoken": "^8.4.0",
     "mongoose": "^5.4.19",
-    "node-cron": "^2.0.3"
+    "node-cron": "^2.0.3",
+    "passport": "^0.4.0",
+    "passport-local": "^1.0.0"
   }
 }

@@ -2,6 +2,7 @@
 const mongoose = require('mongoose');
 //Se define un esquema para la base de datos
 const Schema = mongoose.Schema;
+const ObjectId = mongoose.Schema.Types.ObjectId;
 
 var probeSchema = new Schema({
     name: {
@@ -19,10 +20,15 @@ var probeSchema = new Schema({
     active: {
         type: Boolean,
         required: "The probe's active is required"
+    },
+    user: { 
+        type: ObjectId,
+        ref: 'User',
+        required: "The probe propietary is required"
     }
 });
 
 //Métodos
 
 //Creamos el modelo
-mongoose.model('Probe', probeSchema);
+module.exports = mongoose.model('Probe', probeSchema);
