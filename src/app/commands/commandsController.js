@@ -9,7 +9,6 @@ var Result = mongoose.model('Result');
 //var exports = module.exports;
 exports.save = function (req, res, next) {
     var command = new Command();
-    
     command.name = req.body.name;
     command.parameters = req.body.parameters;
     command.time = req.body.time;

@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const config = require( './config').config;
 const bodyParser = require('body-parser');
+const http = require('http');
 const https = require('https');
 const app = express();
 const fs = require('fs');
@@ -51,5 +52,7 @@ app.use(function(err, req, res, next) {
   });
 });
 
+var httpServer = http.createServer(app);
 var httpsServer = https.createServer(credentials, app);
-httpsServer.listen(config.env.port, () => console.log(`Example app listenning on port ${config.env.port}!`));
+//httpsServer.listen(config.env.port, () => console.log(`Example app listenning on port ${config.env.port}!`));
+httpServer.listen(config.env.port, () => console.log(`Example app listenning on port ${config.env.port}!`));
