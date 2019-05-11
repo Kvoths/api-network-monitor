@@ -5,6 +5,9 @@ const Schema = mongoose.Schema;
 const ObjectId = mongoose.Schema.Types.ObjectId;
 
 var resultSchema = new Schema({
+    id_on_probe: {
+        type: ObjectId
+    },
     type: {
         type: String,
         required: "The result's type is required"
@@ -18,11 +21,7 @@ var resultSchema = new Schema({
         ref: 'Command',
         required: 'The command that outputs the result is required'
     },
-    results: {},
-    sent: {
-        type: Boolean,
-        default: false
-    }
+    results: {}
 });
 
 //Métodos

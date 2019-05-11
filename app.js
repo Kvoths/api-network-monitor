@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const https = require('https');
 const app = express();
 const fs = require('fs');
+require('./src/app/mqtt');
 
 //Securizar rutas
 const passport = require('passport');
@@ -69,5 +70,6 @@ app.use(function(err, req, res, next) {
       error: err
   });
 });
-var httpsServer = https.createServer(credentials, app);
+
+let httpsServer = https.createServer(credentials, app);
 httpsServer.listen(config.env.port, () => console.log(`Example app listenning on port ${config.env.port}!`));
