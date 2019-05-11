@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const cron = require('node-cron');
 const { spawn } = require('child_process');
+const mqttController = require('../mqtt/mqttController');
+
 require('./command');
 require('./result');
 var Probe = require('../probes/probe');
@@ -59,11 +61,13 @@ exports.save = function (req, res, next) {
     command.time = req.body.time;
     command.duration = req.body.duration;
     command.probe = req.body.probe;
+    command.active = req.body.active;
     command.save( function(err, command) {
-        if (err)
+        if (err) {
             return next(err);
-        //this.createCron(command);
-        this.sendCommandToProbe(command);
+        }
+
+        sendCommandToProbe(command);
         res.status(204);
         res.json({
         });
@@ -83,11 +87,13 @@ exports.update = function (req, res, next) {
         command.time = req.body.time;
         command.duration = req.body.duration;
         command.probe = req.body.probe;
+        command.active = req.body.active;
         command.save( function(err) {
             if (err) {
                 return next(err);
             }
-            
+
+            sendCommandToProbe(command);            
             res.status(204);
             res.json({});
         });
@@ -159,7 +165,7 @@ exports.processMessage = function (topic, message) {
         let result = JSON.parse(message);
         saveResult (result);
     } catch (e) {
-        //console.log(message);
+        console.log(message);
     }
 }
 
@@ -170,8 +176,17 @@ saveResult = function (result) {
     new_result.type = result.type;
     new_result.results = result.results;
     new_result.save( function(err) {
-        if (err)
-            console.log(err);
+        if (err) {
+            console.log(err);            
+        }
+
+        console.log('Resultado guardado correctamente.');
         return true;
+    
     });
+}
+
+sendCommandToProbe = function (command) {
+    let message = JSON.stringify(command);
+    mqttController.sendMessage(`probe/${command.probe}/command/${command._id}`, message);
 }
