@@ -10,6 +10,7 @@ exports.save = function (req, res, next) {
     probe.ip = req.body.ip;
     probe.port = req.body.port;
     probe.active = req.body.active;
+    probe.user = req.body.user;
     probe.save( function(err) {
         if (err) {
             return next(err);
@@ -32,6 +33,7 @@ exports.update = function (req, res, next) {
         probe.ip = req.body.ip;
         probe.port = req.body.port;
         probe.active = req.body.active;
+        probe.user = req.body.user;
         probe.save( function(err) {
             if (err) {
                 return next(err);

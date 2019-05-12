@@ -81,9 +81,9 @@ exports.getById = function (req, res, next) {
     });
 };
 
-exports.checkAlert = function (alert_id, result) {
+exports.checkAlert = function (command, result) {
 
-    Alert.findById(alert_id, function(err, alert) {
+    Alert.findById(command.alert, function(err, alert) {
         if (err) {
             return next(err);
         }
@@ -112,7 +112,7 @@ exports.checkAlert = function (alert_id, result) {
         }
 
         if (sendMail) {
-            mailsController.sendEmail('asdf', 'asdf', 'asdf');
+            mailsController.sendEmail(command.probe.user.mail, 'CONTROLADOR - RESULTADO FUERA DEL INTERVALO ESTABLECIDO', 'asdf');
         }
     });
 };

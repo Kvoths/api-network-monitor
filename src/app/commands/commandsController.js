@@ -195,13 +195,18 @@ saveResult = function (result) {
     
     });
 
-    Command.findById(result.command, function (err, command) {
+    Command.findById(result.command).
+    populate({
+        path: 'probe',
+        populate: { path: 'user' }
+    }).
+    exec( function (err, command) {
         if (err) {
             console.log(error);
         }
 
         if (command.alert) {
-            alertController.checkAlert(command.alert, result);
+            alertController.checkAlert(command, result);
         }
     });
 
@@ -210,7 +215,4 @@ saveResult = function (result) {
 sendCommandToProbe = function (command) {
     let message = JSON.stringify(command);
     mqttController.sendMessage(`probe/${command.probe}/command/${command._id}`, message);
-}
-
-sendEmail = function () {
 }
