@@ -64,6 +64,10 @@ var commandSchema = new Schema({
         ref: 'Probe',
         required: 'The probe where the command will be executed is required'
     },
+    alert: {
+        type: ObjectId,
+        ref: 'Alert'
+    },
     active: {
         type: Boolean,
         default: true

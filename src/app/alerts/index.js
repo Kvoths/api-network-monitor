@@ -2,14 +2,14 @@
 const express = require('express');
 const router = express.Router();
 //Importamos el controlador de Usuario
-const probesController = require('./probesController');
+const alertsController = require('./alertsController');
 
-//Ruta para registrar usuario
-router.get('/', probesController.list);
-router.get('/:id', probesController.getById);
-router.post('/', probesController.save);
-router.put('/:id', probesController.update);
-router.delete('/:id', probesController.delete);
+//Rutas de comandos
+router.get('/', alertsController.list);
+router.get('/:id', alertsController.getById);
+router.post('/', alertsController.save);
+router.put('/:id', alertsController.update);
+router.delete('/:id', alertsController.delete);
 
 //Manejadores de errores
 router.use(function(err, req, res, next) {

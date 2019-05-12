@@ -18,10 +18,11 @@ const auth = jwt({
 });
 
 //Modules
-const usersApp = require('./src/app/users/');
 require('./config/passport');
+const usersApp = require('./src/app/users/');
 const commandsApp = require('./src/app/commands/');
 const probesApp = require('./src/app/probes/');
+const alertsApp = require('./src/app/alerts/');
 //Certificados
 const privateKey  = fs.readFileSync('sslcert/key.pem', 'utf8');
 const certificate = fs.readFileSync('sslcert/certificate.pem', 'utf8');
@@ -55,6 +56,7 @@ app.use(function(req, res, next) {
 app.use('/', usersApp);
 app.use('/', auth, commandsApp);
 app.use('/probes', auth, probesApp);
+app.use('/alerts', auth, alertsApp);
 
 app.use(function (err, req, res, next) {
   if (err.name === 'UnauthorizedError') {

@@ -1,16 +1,16 @@
 const mongoose = require('mongoose');
-require('./probe');
+require('./alert');
 
-var Probe = mongoose.model('Probe');
+var Alert = mongoose.model('Alert');
 
 exports.save = function (req, res, next) {
-    var probe = new Probe();
+    let alert = new Alert();
     
-    probe.name = req.body.name;
-    probe.ip = req.body.ip;
-    probe.port = req.body.port;
-    probe.active = req.body.active;
-    probe.save( function(err) {
+    alert.name = req.body.name;
+    alert.description = req.body.description;
+    alert.min = req.body.min;
+    alert.max = req.body.max;
+    alert.save( function(err) {
         if (err) {
             return next(err);
         }
@@ -23,16 +23,16 @@ exports.save = function (req, res, next) {
 exports.update = function (req, res, next) {
     let id = req.params.id;
 
-    Probe.findById(id,  function(err, probe) {
+    Alert.findById(id,  function(err, alert) {
         if (err) {
             return next(err);
         }
 
-        probe.name = req.body.name;
-        probe.ip = req.body.ip;
-        probe.port = req.body.port;
-        probe.active = req.body.active;
-        probe.save( function(err) {
+        alert.name = req.body.name;
+        alert.description = req.body.description;
+        alert.min = req.body.min;
+        alert.max = req.body.max;
+        alert.save( function(err) {
             if (err) {
                 return next(err);
             }
@@ -44,7 +44,7 @@ exports.update = function (req, res, next) {
 }
 
 exports.list = function (req, res, next) {
-    Probe.find( function(err, probes) {
+    Alert.find( function(err, probes) {
         if (err) {
             return next(err);
         }
@@ -57,7 +57,7 @@ exports.list = function (req, res, next) {
 exports.delete = function (req, res, next) {
     let id = req.params.id;
     
-    Probe.deleteOne( {'_id': id}, function(err, probes) {
+    Alert.deleteOne( {'_id': id}, function(err, probes) {
         if (err) {
             return next(err);
         }
@@ -70,12 +70,12 @@ exports.delete = function (req, res, next) {
 exports.getById = function (req, res, next) {
     let id = req.params.id;
 
-    Probe.findById(id,  function(err, probe) {
+    Alert.findById(id,  function(err, alert) {
         if (err) {
             return next(err);
         }
 
         res.status(200);
-        res.json(probe);
+        res.json(alert);
     });
 };
