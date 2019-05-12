@@ -1,19 +1,19 @@
+require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
-const config = require( './config').config;
 const bodyParser = require('body-parser');
 const https = require('https');
 const app = express();
 const fs = require('fs');
+
 require('./src/app/mqtt');
 
 //Securizar rutas
 const passport = require('passport');
 const jwt = require('express-jwt');
 
-process.env.jwt_secret = config.env.jwt_secret;
 const auth = jwt({
-  secret: process.env.jwt_secret,
+  secret: process.env.JWT_SECRET,
   userProperty: 'payload'
 });
 
@@ -31,17 +31,13 @@ const credentials = {key: privateKey, cert: certificate};
 app.use(bodyParser.json());
 
 //Conexion con BD
-mongoose.connect(config.env.db, { useNewUrlParser: true });
+mongoose.connect(process.env.DATABASE, { useNewUrlParser: true });
 mongoose.connection.on('error', () => {
   throw new Error(`Unable to connect to database.`);
 });
 mongoose.connection.on('connected', () => {
   console.log(`Connected to database.`);
 });
-
-if (config.env === 'development') {
-  mongoose.set('debug', true);
-}
 
 //Hack para habilitar cross origin
 app.use(passport.initialize());
@@ -74,4 +70,4 @@ app.use(function(err, req, res, next) {
 });
 
 let httpsServer = https.createServer(credentials, app);
-httpsServer.listen(config.env.port, () => console.log(`Example app listenning on port ${config.env.port}!`));
+httpsServer.listen(process.env.PORT, () => console.log(`Example app listenning on port ${process.env.PORT}!`));

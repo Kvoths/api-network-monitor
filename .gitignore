@@ -28,3 +28,6 @@ benchmarks/graphs
 
 #VSCode
 .vscode/
+
+#Environment
+.env

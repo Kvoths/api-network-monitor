@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const cron = require('node-cron');
 const { spawn } = require('child_process');
 const mqttController = require('../mqtt/mqttController');
-
+const alertController = require('../alerts/alertsController');
 require('./command');
 require('./result');
 var Probe = require('../probes/probe');
@@ -62,6 +62,11 @@ exports.save = function (req, res, next) {
     command.duration = req.body.duration;
     command.probe = req.body.probe;
     command.active = req.body.active;
+
+    if (req.body.alert) {
+        command.alert = req.body.alert;
+    }
+
     command.save( function(err, command) {
         if (err) {
             return next(err);
@@ -88,6 +93,11 @@ exports.update = function (req, res, next) {
         command.duration = req.body.duration;
         command.probe = req.body.probe;
         command.active = req.body.active;
+
+        if (req.body.alert) {
+            command.alert = req.body.alert;
+        }
+        
         command.save( function(err) {
             if (err) {
                 return next(err);
@@ -184,9 +194,23 @@ saveResult = function (result) {
         return true;
     
     });
+
+    Command.findById(result.command, function (err, command) {
+        if (err) {
+            console.log(error);
+        }
+
+        if (command.alert) {
+            alertController.checkAlert(command.alert, result);
+        }
+    });
+
 }
 
 sendCommandToProbe = function (command) {
     let message = JSON.stringify(command);
     mqttController.sendMessage(`probe/${command.probe}/command/${command._id}`, message);
+}
+
+sendEmail = function () {
 }

@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const mailsController = require('../mails/mailsController');
 require('./alert');
 
 var Alert = mongoose.model('Alert');
@@ -77,5 +78,41 @@ exports.getById = function (req, res, next) {
 
         res.status(200);
         res.json(alert);
+    });
+};
+
+exports.checkAlert = function (alert_id, result) {
+
+    Alert.findById(alert_id, function(err, alert) {
+        if (err) {
+            return next(err);
+        }
+        
+        let sendMail = false;
+
+        switch (result.type) {
+            case 'ping':
+                if (result.results.avg < alert.min || result.results.avg > alert.max) {
+                    sendMail = true;
+                }
+
+                break;
+            case 'tcpdump':
+                if (result.results.num_packets_per_secon < alert.min || result.results.num_packets_per_secon > alert.max) {
+                    sendMail = true;
+                }
+
+                break;
+            case 'iperf':
+                if (result.results.avg < alert.min || result.results.avg > alert.max) {
+                    sendMail = true;
+                }
+
+                break;
+        }
+
+        if (sendMail) {
+            mailsController.sendEmail('asdf', 'asdf', 'asdf');
+        }
     });
 };

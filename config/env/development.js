@@ -5,6 +5,7 @@ exports.env = {
     env: 'development',
     db: 'mongodb://localhost/network-monitoring',
     port: 3000,
-    jwt_secret: crypto.randomBytes(256)
+    jwt_secret: crypto.randomBytes(256),
+    
 };
 

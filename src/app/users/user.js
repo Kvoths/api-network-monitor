@@ -61,7 +61,7 @@ userSchema.methods.generateToken = function (password) {
       mail: this.email,
       name: this.name,
       exp: parseInt(expiry.getTime() / 1000),
-    }, process.env.jwt_secret);
+    }, process.env.JWT_SECRET);
 };
 
 //Creamos el modelo
