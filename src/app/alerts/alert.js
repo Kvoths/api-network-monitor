@@ -2,6 +2,7 @@
 const mongoose = require('mongoose');
 //Se define un esquema para la base de datos
 const Schema = mongoose.Schema;
+const ObjectId = mongoose.Schema.Types.ObjectId;
 
 var alertSchema = new Schema({
     name: {
@@ -19,6 +20,11 @@ var alertSchema = new Schema({
     max: {
         type: Number,
         required: "The min value when the alert will be sent is required"
+    },
+    user: { 
+        type: ObjectId,
+        ref: 'User',
+        required: "The probe propietary is required"
     }
 });
 

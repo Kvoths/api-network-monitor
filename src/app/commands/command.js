@@ -71,6 +71,15 @@ var commandSchema = new Schema({
     active: {
         type: Boolean,
         default: true
+    },
+    user: {
+        type: ObjectId,
+
+    },
+    user: { 
+        type: ObjectId,
+        ref: 'User',
+        required: "The probe propietary is required"
     }
 });
 

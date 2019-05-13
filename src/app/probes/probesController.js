@@ -5,12 +5,13 @@ var Probe = mongoose.model('Probe');
 
 exports.save = function (req, res, next) {
     var probe = new Probe();
+    let user_id = req.payload._id;
     
     probe.name = req.body.name;
     probe.ip = req.body.ip;
     probe.port = req.body.port;
     probe.active = req.body.active;
-    probe.user = req.body.user;
+    probe.user = user_id;
     probe.save( function(err) {
         if (err) {
             return next(err);
@@ -23,6 +24,7 @@ exports.save = function (req, res, next) {
 
 exports.update = function (req, res, next) {
     let id = req.params.id;
+    let user_id = req.payload._id;
 
     Probe.findById(id,  function(err, probe) {
         if (err) {
@@ -33,7 +35,7 @@ exports.update = function (req, res, next) {
         probe.ip = req.body.ip;
         probe.port = req.body.port;
         probe.active = req.body.active;
-        probe.user = req.body.user;
+        probe.user = user_id;
         probe.save( function(err) {
             if (err) {
                 return next(err);
@@ -46,7 +48,9 @@ exports.update = function (req, res, next) {
 }
 
 exports.list = function (req, res, next) {
-    Probe.find( function(err, probes) {
+    let user_id = req.payload._id;
+
+    Probe.find({user: user_id}, function(err, probes) {
         if (err) {
             return next(err);
         }
@@ -58,8 +62,9 @@ exports.list = function (req, res, next) {
 
 exports.delete = function (req, res, next) {
     let id = req.params.id;
+    let user_id = req.payload._id;
     
-    Probe.deleteOne( {'_id': id}, function(err, probes) {
+    Probe.deleteOne( {'_id': id, user: user_id}, function(err, probes) {
         if (err) {
             return next(err);
         }
@@ -71,8 +76,9 @@ exports.delete = function (req, res, next) {
 
 exports.getById = function (req, res, next) {
     let id = req.params.id;
+    let user_id = req.payload._id;
 
-    Probe.findById(id,  function(err, probe) {
+    Probe.findOne({_id: id, user: user_id},  function(err, probe) {
         if (err) {
             return next(err);
         }

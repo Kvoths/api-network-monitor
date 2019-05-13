@@ -6,11 +6,13 @@ var Alert = mongoose.model('Alert');
 
 exports.save = function (req, res, next) {
     let alert = new Alert();
+    let user_id = req.payload._id;
     
     alert.name = req.body.name;
     alert.description = req.body.description;
     alert.min = req.body.min;
     alert.max = req.body.max;
+    alert.user = user_id;
     alert.save( function(err) {
         if (err) {
             return next(err);
@@ -23,6 +25,7 @@ exports.save = function (req, res, next) {
 
 exports.update = function (req, res, next) {
     let id = req.params.id;
+    let user_id = req.payload._id;
 
     Alert.findById(id,  function(err, alert) {
         if (err) {
@@ -33,6 +36,7 @@ exports.update = function (req, res, next) {
         alert.description = req.body.description;
         alert.min = req.body.min;
         alert.max = req.body.max;
+        alert.user = user_id;
         alert.save( function(err) {
             if (err) {
                 return next(err);
@@ -45,7 +49,9 @@ exports.update = function (req, res, next) {
 }
 
 exports.list = function (req, res, next) {
-    Alert.find( function(err, probes) {
+    let user_id = req.payload._id;
+
+    Alert.find( {user: user_id}, function(err, probes) {
         if (err) {
             return next(err);
         }
@@ -57,8 +63,9 @@ exports.list = function (req, res, next) {
 
 exports.delete = function (req, res, next) {
     let id = req.params.id;
+    let user_id = req.payload._id;
     
-    Alert.deleteOne( {'_id': id}, function(err, probes) {
+    Alert.deleteOne( {'_id': id, user: user_id}, function(err, probes) {
         if (err) {
             return next(err);
         }
@@ -70,8 +77,9 @@ exports.delete = function (req, res, next) {
 
 exports.getById = function (req, res, next) {
     let id = req.params.id;
+    let user_id = req.payload._id;
 
-    Alert.findById(id,  function(err, alert) {
+    Alert.findOne({_id: id, user: user_id},  function(err, alert) {
         if (err) {
             return next(err);
         }

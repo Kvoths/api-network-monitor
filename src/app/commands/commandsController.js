@@ -28,12 +28,15 @@ exports.getCommandsAvailableTypes = function (req, res, next) {
 }
 
 exports.list = function (req, res, next) {
+    let user_id = req.payload._id;
 
-    Command.find( function(err, commands) {
+    Command.find({user: user_id}, function(err, commands) {
         if (err) {
             return next(err);
         }
-
+        for (command of commands) {
+            console.log(command.user);
+        }
         res.status(200);
         res.json(commands);
     });
@@ -42,8 +45,9 @@ exports.list = function (req, res, next) {
 
 exports.getById = function (req, res, next) {
     let id = req.params.id;
+    let user_id = req.payload._id;
 
-    Command.findById(id,  function(err, command) {
+    Command.findOne({_id: id, user: user_id},  function(err, command) {
         if (err) {
             return next(err);
         }
@@ -62,6 +66,7 @@ exports.save = function (req, res, next) {
     command.duration = req.body.duration;
     command.probe = req.body.probe;
     command.active = req.body.active;
+    command.user = req.payload._id;
 
     if (req.body.alert) {
         command.alert = req.body.alert;
@@ -93,6 +98,7 @@ exports.update = function (req, res, next) {
         command.duration = req.body.duration;
         command.probe = req.body.probe;
         command.active = req.body.active;
+        command.user = req.payload._id;
 
         if (req.body.alert) {
             command.alert = req.body.alert;
@@ -125,8 +131,9 @@ exports.delete = function (req, res, next) {
 
 exports.listByProbe = function (req, res, next) {
     let probe_id = req.params.probe_id;
+    let user_id = req.payload._id;
 
-    Command.find( { 'probe': probe_id}, function(err, commands) {
+    Command.find( { probe: probe_id, user: user_id}, function(err, commands) {
         if (err) {
             return next(err);
         }
