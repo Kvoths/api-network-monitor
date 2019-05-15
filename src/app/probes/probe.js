@@ -9,14 +9,6 @@ var probeSchema = new Schema({
         type: String,
         required: "The probe's name is required"
     },
-    ip: {
-        type: String,
-        required: "The probe's name is required"
-    },
-    port: {
-        type: Number,
-        required: "The probe's port is required"
-    },
     active: {
         type: Boolean,
         required: "The probe's active is required"
@@ -24,7 +16,7 @@ var probeSchema = new Schema({
     user: { 
         type: ObjectId,
         ref: 'User',
-        required: "The probe propietary is required"
+        required: "The probe's propietary is required"
     }
 });
 

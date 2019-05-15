@@ -8,8 +8,6 @@ exports.save = function (req, res, next) {
     let user_id = req.payload._id;
     
     probe.name = req.body.name;
-    probe.ip = req.body.ip;
-    probe.port = req.body.port;
     probe.active = req.body.active;
     probe.user = user_id;
     probe.save( function(err) {
@@ -32,8 +30,6 @@ exports.update = function (req, res, next) {
         }
 
         probe.name = req.body.name;
-        probe.ip = req.body.ip;
-        probe.port = req.body.port;
         probe.active = req.body.active;
         probe.user = user_id;
         probe.save( function(err) {
