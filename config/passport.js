@@ -5,10 +5,10 @@ const User = require('../src/app/users/user');
 
 
 passport.use(new LocalStrategy({
-    usernameField: 'email'
+    usernameField: 'mail'
   },
   function(username, password, done) {
-    User.findOne({ email: username }, function (err, user) {
+    User.findOne({ mail: username }, function (err, user) {
         if (err) {
             return done(err); 
         }
@@ -19,7 +19,7 @@ passport.use(new LocalStrategy({
             });
         }
         // Return if password is wrong
-        if (!user.validPassword(password)) {
+        if (!user.checkPassword(password)) {
             return done(null, false, {
                 message: 'Password is wrong'
             });

@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const cron = require('node-cron');
 const { spawn } = require('child_process');
 const mqttController = require('../mqtt/mqttController');
 const alertController = require('../alerts/alertsController');
@@ -137,7 +136,7 @@ exports.listByProbe = function (req, res, next) {
         if (err) {
             return next(err);
         }
-
+        
         res.status(200);
         res.json(commands);
     });
@@ -222,4 +221,80 @@ saveResult = function (result) {
 sendCommandToProbe = function (command) {
     let message = JSON.stringify(command);
     mqttController.sendMessage(`probe/${command.probe}/command/${command._id}`, message);
+}
+
+//Ejecución de comandos
+exports.exec = function (command) {
+    return new Promise( function(resolve, reject) {
+        var commandParams = [];
+
+        for (var i = 0; i < command.parameters.length; i++)
+        {
+            var parameter = command.parameters[i];
+            commandParams.push(parameter['name']);
+
+            if (parameter['value'] !== undefined && parameter['value'] !== null && parameter['value'] !== "")
+                commandParams.push(parameter['value']);
+        }
+        
+        commandSpawn = spawn(command.name, commandParams);
+        getCommandOutput(commandSpawn, command.duration).then( output => {
+            return saveCommandOutput(command._id, command.name, output, command.duration);
+        })
+        .then( output => {
+            resolve(output);
+        });
+    });
+}
+
+getCommandOutput = function (commandSpawn, duration) {
+    return new Promise( function(resolve, reject) {
+        var output = '';
+        
+        setTimeout( function () { 
+            console.log('Timeout, the process will be killed');
+            commandSpawn.kill('SIGINT');
+        }, duration * 1000);
+        
+        commandSpawn.stdout.on('data', function (data) {
+            if (data != null) {
+                output += data.toString();
+            }
+        });
+            
+        commandSpawn.stderr.on('data', function (data) {
+            if (data != null) {
+                console.log('stderr: ' + data.toString());
+                output += data.toString();
+            }
+        });
+            
+        commandSpawn.on('exit', function (code) {
+            if (code != null) {
+                console.log('child process exited with code ' + code.toString());
+                resolve(output);
+            }
+        });
+    });
+}
+
+saveCommandOutput = function (command_id, command_name, output, duration) {
+    return new Promise( function(resolve, reject) {
+        let expr, dividedString, values;
+
+        switch (command_name) {
+            case 'ping':
+                //Si la última línea del ping es rtt significa que ha tenido éxito el ping
+                expr = 'rtt min/avg/max/mdev = ';
+                dividedString = output.split(expr);
+                if (typeof dividedString[1] !== 'undefined') {
+                    console.log('Sonda activa');
+                    resolve(true);
+                } else {
+                    console.log('Sonda inactiva');
+                    resolve(false);
+                }
+                break;
+        }
+    });
 }

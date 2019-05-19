@@ -19,8 +19,9 @@ router.use(function(err, req, res, next) {
             error: err
         });
     }
-    else
+    else {
         next(err);
+    }
 });
 
 module.exports = router;

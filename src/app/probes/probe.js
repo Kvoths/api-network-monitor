@@ -9,6 +9,10 @@ var probeSchema = new Schema({
         type: String,
         required: "The probe's name is required"
     },
+    ip: {
+        type: String,
+        required: "The probe's ip is required"
+    },
     active: {
         type: Boolean,
         required: "The probe's active is required"

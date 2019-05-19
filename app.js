@@ -22,6 +22,7 @@ require('./config/passport');
 const usersApp = require('./src/app/users/');
 const commandsApp = require('./src/app/commands/');
 const probesApp = require('./src/app/probes/');
+const probesController = require('./src/app/probes/probesController');
 const alertsApp = require('./src/app/alerts/');
 //Certificados
 const privateKey  = fs.readFileSync('sslcert/key.pem', 'utf8');
@@ -58,6 +59,8 @@ app.use(function (err, req, res, next) {
   if (err.name === 'UnauthorizedError') {
     res.status(401);
     res.json({"message" : err.name + ": " + err.message});
+  } else {
+    next(err);
   }
 });
 
@@ -68,6 +71,8 @@ app.use(function(err, req, res, next) {
       error: err
   });
 });
+
+probesController.checkActiveProbes();
 
 let httpsServer = https.createServer(credentials, app);
 httpsServer.listen(process.env.PORT, () => console.log(`Example app listenning on port ${process.env.PORT}!`));
