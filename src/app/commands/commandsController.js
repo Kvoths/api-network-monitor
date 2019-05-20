@@ -24,14 +24,22 @@ exports.getCommandsAvailableTypes = function (req, res, next) {
         let results = [
             {
                 'name': 'Medir latencia y congestión',
-                'value': 'ping'
+                'value': 'ping',
+                'disabled': false
             }
         ];
 
         if (count === 0) {
             results.push({
-                'name': 'Medir tasa de paquetes por segundo',
-                'value': 'tcpdump'
+                'name': 'Medir tasa de paquetes por segundo (Uno por sonda)',
+                'value': 'tcpdump',
+                'disabled': false
+            });
+        } else {
+            results.push({
+                'name': 'Medir tasa de paquetes por segundo (Uno por sonda)',
+                'value': 'tcpdump',
+                'disabled': true
             });
         }
 
@@ -86,6 +94,8 @@ exports.save = function (req, res, next) {
 
     if (req.body.alert !== undefined) {    
         command.alert = req.body.alert;
+    } else if (command.alert !== undefined) {
+        command.alert = undefined;
     }
 
     command.save( function(err, command) {
@@ -122,6 +132,8 @@ exports.update = function (req, res, next) {
 
         if (req.body.alert !== undefined) {
             command.alert = req.body.alert;
+        } else if (command.alert !== undefined) {
+            command.alert = undefined;
         }
         
         command.save( function(err) {
