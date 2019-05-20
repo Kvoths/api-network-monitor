@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const mailsController = require('../mails/mailsController');
+const commandsController = require('../commands/commandsController');
 require('./alert');
 
 var Alert = mongoose.model('Alert');
@@ -90,6 +91,22 @@ exports.getById = function (req, res, next) {
 };
 
 exports.checkAlert = function (command, result) {
+    let body = `
+        <div>
+            <h2>Datos de la sonda</h2>
+            <p>Id de la sonda: ${command.probe._id}</p>
+            <p>Nombre de la sonda: ${command.probe.name}</p>
+            <p>Ip de la sonda: ${command.probe.ip}</p>
+        </div>
+        <div>
+            <h2>Comando ejecutado</h2>
+            <p>${command.toString()}</p>
+        </div>
+        <div>
+            <h2>Resultados</h2>
+            ${result.toList()}
+        </div>
+    `;
 
     Alert.findById(command.alert, function(err, alert) {
         if (err) {
@@ -120,7 +137,7 @@ exports.checkAlert = function (command, result) {
         }
 
         if (sendMail) {
-            mailsController.sendEmail(command.probe.user.mail, 'CONTROLADOR - RESULTADO FUERA DEL INTERVALO ESTABLECIDO', 'asdf');
+            mailsController.sendEmail(command.probe.user.mail, 'CONTROLADOR - RESULTADO FUERA DEL INTERVALO ESTABLECIDO', body);
         }
     });
 };

@@ -25,6 +25,17 @@ var resultSchema = new Schema({
 });
 
 //Métodos
+resultSchema.methods.toList = function() {
+    let resultString = '<ul>';
+    for (var key in this.results) {
+        if (this.results.hasOwnProperty(key)) {
+            resultString += '<li>' + key + ": " + this.results[key] + '</li>';
+        }
+    }
 
+    resultString += '</ul>';
+
+    return resultString;
+};
 //Creamos el modelo
 mongoose.model('Result', resultSchema);

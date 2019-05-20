@@ -14,7 +14,6 @@ exports.sendEmail = async function (to, subject, body) {
     let info = await transporter.sendMail({
     to: to,
     subject: subject,
-    text: "Hello world?", // plain text body
-    html: "<b>Hello world?</b>" // html body
+    html: body // html body
     });
 }

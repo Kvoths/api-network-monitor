@@ -11,19 +11,33 @@ var Command = mongoose.model('Command');
 var Result = mongoose.model('Result');
 //var exports = module.exports;
 exports.getCommandsAvailableTypes = function (req, res, next) {
-    let results = [
-        {
-            'name': 'Medir latencia y congestión',
-            'value': 'ping'
-        },
-        {
-            'name': 'Medir tasa de paquetes por segundo',
-            'value': 'tcpdump'
-        }
-    ];
+    let probe_id = req.params.id;
 
-    res.status(200);
-    res.json(results);
+    Command.count({
+        name: 'tcpdump',
+        probe: probe_id
+    }, function (err, count) {
+        if (err) {
+            return next(err);
+        }
+
+        let results = [
+            {
+                'name': 'Medir latencia y congestión',
+                'value': 'ping'
+            }
+        ];
+
+        if (count === 0) {
+            results.push({
+                'name': 'Medir tasa de paquetes por segundo',
+                'value': 'tcpdump'
+            });
+        }
+
+        res.status(200);
+        res.json(results);
+    });
 }
 
 exports.list = function (req, res, next) {
@@ -33,9 +47,11 @@ exports.list = function (req, res, next) {
         if (err) {
             return next(err);
         }
+
         for (command of commands) {
             console.log(command.user);
         }
+
         res.status(200);
         res.json(commands);
     });
@@ -60,6 +76,7 @@ exports.save = function (req, res, next) {
     var command = new Command();
     
     command.name = req.body.name;
+    command.destiny = req.body.destiny;
     command.parameters = req.body.parameters;
     command.time = req.body.time;
     command.duration = req.body.duration;
@@ -67,7 +84,7 @@ exports.save = function (req, res, next) {
     command.active = req.body.active;
     command.user = req.payload._id;
 
-    if (req.body.alert) {
+    if (req.body.alert !== undefined) {    
         command.alert = req.body.alert;
     }
 
@@ -99,7 +116,11 @@ exports.update = function (req, res, next) {
         command.active = req.body.active;
         command.user = req.payload._id;
 
-        if (req.body.alert) {
+        if (req.body.destiny !== undefined) {
+            command.destiny = req.body.destiny;
+        }
+
+        if (req.body.alert !== undefined) {
             command.alert = req.body.alert;
         }
         
@@ -118,14 +139,20 @@ exports.update = function (req, res, next) {
 exports.delete = function (req, res, next) {
     let id = req.params.id;
     
-    Command.deleteOne( {'_id': id}, function(err, command) {
-        if (err) {
-            return next(err);
-        }
+    Command.findById(id, function(err, command) {
+        command.active = false;
+        sendCommandToProbe(command);            
 
-        res.status(204);
-        res.json({});
+        Command.deleteOne( {'_id': id}, function(err) {
+            if (err) {
+                return next(err);
+            }
+
+            res.status(204);
+            res.json({});
+        });
     });
+
 }
 
 exports.listByProbe = function (req, res, next) {
@@ -211,8 +238,8 @@ saveResult = function (result) {
             console.log(error);
         }
 
-        if (command.alert) {
-            alertController.checkAlert(command, result);
+        if (command !== undefined && command !== null && command.alert !== undefined) {
+            alertController.checkAlert(command, new_result);
         }
     });
 

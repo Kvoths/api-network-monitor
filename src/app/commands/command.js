@@ -51,6 +51,10 @@ var commandSchema = new Schema({
             msg: 'You must insert at least one parameter'
         }
     },
+    destiny: {
+        type: String,
+        default: ''
+    },
     time: {   
         type: cronTimeSchema,
         required: "The time when the command will be executed is required",
@@ -84,6 +88,20 @@ var commandSchema = new Schema({
 });
 
 //Métodos
+commandSchema.methods.toString = function() {
+    let commandString = this.name;
 
+    for (let i = 0; i < this.parameters.length; i++)
+    {
+        let parameter = this.parameters[i];
+        commandString += ` ${parameter['name']}`;
+
+        if (parameter['value'] !== undefined && parameter['value'] !== null && parameter['value'] !== "") {
+            commandString += ` ${parameter['value']}`;
+        }
+    }
+
+    return commandString;
+};
 //Creamos el modelo
 mongoose.model('Command', commandSchema);

@@ -12,12 +12,11 @@ router.get('/commands/:id/results/byDate', commandsController.getResultsByComman
 //Rutas de comandos
 router.get('/commands/', commandsController.list);
 router.get('/probes/:probe_id/commands', commandsController.listByProbe);
-router.get('/commands/availableTypes', commandsController.getCommandsAvailableTypes);
+router.get('/probes/:id/commands/availableTypes', commandsController.getCommandsAvailableTypes);
 router.get('/commands/:id', commandsController.getById);
 router.post('/commands/', commandsController.save);
 router.put('/commands/:id', commandsController.update);
 router.delete('/commands/:id', commandsController.delete);
-
 
 //router.post('/commands/execution/:id', commandsController.exec);
 
