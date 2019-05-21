@@ -21,6 +21,7 @@ exports.getCommandsAvailableTypes = function (req, res, next) {
             return next(err);
         }
 
+        //PING
         let results = [
             {
                 'name': 'Medir latencia y congestión',
@@ -29,6 +30,7 @@ exports.getCommandsAvailableTypes = function (req, res, next) {
             }
         ];
 
+        //TCPDUMP - Solo puede haber un tcpdump por sonda
         if (count === 0) {
             results.push({
                 'name': 'Medir tasa de paquetes por segundo (Uno por sonda)',
@@ -43,8 +45,30 @@ exports.getCommandsAvailableTypes = function (req, res, next) {
             });
         }
 
-        res.status(200);
-        res.json(results);
+        //IPERF - Al menos dos sondas
+        let user_id = req.payload._id;
+
+        Probe.count({
+            user: user_id
+        }, function (err, count) {
+
+            if (count > 1) {
+                results.push({
+                    'name': 'Medir ancho de banda (Se necesitan dos sondas)',
+                    'value': 'iperf',
+                    'disabled': false
+                });
+            } else {
+                results.push({
+                    'name': 'Medir ancho de banda (Se necesitan dos sondas)',
+                    'value': 'iperf',
+                    'disabled': false
+                });
+            }
+
+            res.status(200);
+            res.json(results);
+        });
     });
 }
 
@@ -92,6 +116,12 @@ exports.save = function (req, res, next) {
     command.active = req.body.active;
     command.user = req.payload._id;
 
+    if (req.body.server !== undefined) {    
+        command.server = req.body.server;
+    } else {
+        command.server = undefined;
+    }
+    
     if (req.body.alert !== undefined) {    
         command.alert = req.body.alert;
     } else if (command.alert !== undefined) {
@@ -134,6 +164,12 @@ exports.update = function (req, res, next) {
             command.alert = req.body.alert;
         } else if (command.alert !== undefined) {
             command.alert = undefined;
+        }
+
+        if (req.body.server !== undefined) {    
+            command.server = req.body.server;
+        } else {
+            command.server = undefined;
         }
         
         command.save( function(err) {

@@ -6,7 +6,7 @@ exports.sendMessage = function (topic, message) {
     client.on('connect', function () {
         client.publish(topic, message);
         client.end();
-        console.log('Mensage enviado a ' + topic);
+        console.log('Mensaje enviado a ' + topic);
     });
     
 };

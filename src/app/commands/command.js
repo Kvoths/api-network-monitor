@@ -84,6 +84,14 @@ var commandSchema = new Schema({
         type: ObjectId,
         ref: 'User',
         required: "The probe propietary is required"
+    },
+    server: {
+        type: ObjectId,
+        ref: 'Probe',
+        required: [
+            function() { return this.name === 'iperf'; },
+            'The server when the command is iperf is required'
+        ]
     }
 });
 
